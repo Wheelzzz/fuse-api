@@ -1,0 +1,7 @@
+{
+   "cSpell.words": [
+      "nums"
+   ],
+   "appService.defaultWebAppToDeploy": "/subscriptions/78f29690-7dd7-4a20-8234-c7561750c4ab/AppServices/subscriptions/78f29690-7dd7-4a20-8234-c7561750c4ab/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/api-fuse",
+   "appService.deploySubpath": "."
+}

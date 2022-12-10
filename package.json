@@ -4,6 +4,7 @@
   "description": "Node.js CRUD example with SQL Server",
   "main": "server.js",
   "scripts": {
+    "debugapp": "node start --trace-warnings",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

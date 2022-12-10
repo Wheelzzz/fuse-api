@@ -1,9 +1,9 @@
 module.exports = {
-  HOST: "localhost",
-  PORT: "1434",
-  USER: "zkoder",
-  PASSWORD: "123456",
-  DB: "bezkoder_db",
+  HOST: "n6tzc76eqz.database.windows.net",
+  PORT: "1433",
+  USER: "kwheeler",
+  PASSWORD: "Wheelzzz57106",
+  DB: "fuse",
   dialect: "mssql",
   pool: {
     max: 5,
