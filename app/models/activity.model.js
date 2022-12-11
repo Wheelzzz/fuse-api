@@ -10,5 +10,5 @@ module.exports = (sequelize, Sequelize) => {
     updatedByUserID:                {type: Sequelize.STRING}
   });
 
-  return Program;
+  return Activity;
 };
