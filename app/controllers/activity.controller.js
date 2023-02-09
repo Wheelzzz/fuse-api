@@ -1,25 +1,24 @@
 const db = require("../models");
 const Activity = db.activities;
-const Op = db.Sequelize.Op;
+// const Op = db.Sequelize.Op;
 
 // Create and Save a new Activity
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.title) {
+  if (!req.body.memberId) {
     res.status(400).send({message: "Content can not be empty!"});
     return;
   }
 
   // Create a Activity
   const activity = {
-    caseworkerID:         req.body.caseworkerID,
-    clientID:             req.body.clientID,
-    activityType:         req.body.activityType,
-    activityDate:         req.body.activityDate,
-    duration:             req.body.duration,
-    caseNotes:            req.body.caseNotes,
-    createdByUserID:      req.body.createdByUserID,
-    updatedByUserID:      req.body.updatedByUserID
+    caseManagerId:      req.body.caseManagerId,
+    memberId:           req.body.memberId,
+    activityTypeId:     1,      // req.body.activityType,
+    activityDate:       req.body.activityDate,
+    duration:           req.body.duration,
+    activityNotes:      req.body.caseNotes,
+    createdByUserId:    1,      // req.body.createdByUserID,
+    updatedByUserId:    1       // req.body.updatedByUserID
   };
 
   // Save Activity in the database
@@ -30,24 +29,40 @@ exports.create = (req, res) => {
 
 // Retrieve all Activities from the database.
 exports.findAll = (req, res) => {
-  const activityType = req.query.activityType
-  var condition = activityType ? { activityType: { [Op.like]: `%${activityType}%` } } : null;
-
-  Activity.findAll({ where: condition })
+  Activity.findAll()
     .then(data => { res.send(data); })
     .catch(err => { res.status(500).send({ message: err.message || "Some error occurred while retrieving activities." });
   });
 };
 
-// Find a single Activity with an id
-exports.findOne = (req, res) => {
-  const id = req.params.id;
 
-  Activity.findByPk(id)
-    .then(data => { res.send(data); })
-    .catch(err => { res.status(500).send({ message: "Error retrieving Activity with id=" + id });
-  });
-};
+
+
+
+
+
+
+
+
+// Find a single Activity with an id
+// exports.findOne = (req, res) => {
+//   const id = req.params.id;
+
+//   Activity.findByPk(id)
+//     .then(data => { res.send(data); })
+//     .catch(err => {
+//       console.log(err)
+//       res.status(500).send({ message: "Error retrieving Activity with id=" + id });
+//   });
+// };
+
+// exports.findByClient = (req, res) => {
+//   const clientId = req.params.clientId;
+
+//   Activity.findAll({ where: { clientId: clientId } })
+//     .then(data => { res.send(data); })
+//     .catch(err => { res.status(500).send({ message: err.message || "Some error occurred while retrieving client activity." }); });
+// };
 
 // Update a Activity by the id in the request
 exports.update = (req, res) => {

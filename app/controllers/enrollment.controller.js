@@ -1,84 +1,65 @@
 const db = require("../models");
 const Enrollment = db.enrollments;
-const Op = db.Sequelize.Op;
+const sql = require('mssql');
 
-// Create and Save a new Enrollment
+// Retrieve all Enrollments from the database.
+exports.findAll = (req, res) => {
+  Enrollment
+    .findAll({ limit: 10 })
+    .then(data => { res.send(data); })
+    .catch(err => {
+      res.status(500).send({
+      message: err.message || "Some error occurred while retrieving enrollments." });
+  });
+};
+
+// Create and Save a new Member
 exports.create = (req, res) => {
+  const enrollment = {
+    memberId:                   req.body.memberId,
+    program:                    req.body.program,
+    startDate:                  req.body.startDate,
+    endDate:                    req.body.endDate,
+    referralDate:               req.body.referralDate,
+    referralMethod:             req.body.referralMethod,
+    referralSource:             req.body.referralSource,
+    referralPartnerCategory:    req.body.referralPartnerCategory,
+    programEnrollmentNotes:     req.body.programEnrollmentNotes,
+    caseType:                   req.body.caseType,
+    caseManager:                req.body.caseManager,
+    memberFirstName:            req.body.memberFirstName,
+    memberLastname:             req.body.memberLastname,
+    createdByUserId:            req.body.createdByUserID,
+    updatedByUserId:            req.body.updatedByUserID
+  };
+
   // Validate request
-  if (!req.body.title) {
+  if (!req.body.program) {
     res.status(400).send({message: "Content can not be empty!"});
     return;
   }
 
-  // Create a Enrollment
-  const enrollment = {
-    programID: req.body.programID,
-    clientID: req.body.clientID,
-    caseworkerID: req.body.caseworkerID,
-    referralID: req.body.referralID,
-    createdByUserID: req.body.createdByUserID,
-    updatedByUserID: req.body.updatedByUserID
-  };
-
-  // Save Enrollment in the database
   Enrollment.create(enrollment)
     .then(data => {res.send(data);})
-    .catch(err => {res.status(500).send({message: err.message || "Some error occurred while creating the Enrollment."});});
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while creating the enrollment."});});
 };
 
-// Retrieve all Enrollments from the database.
-exports.findAll = (req, res) => {
-  const title = req.query.title;
-  var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
-
-  Enrollment.findAll({ where: condition })
-    .then(data => { res.send(data); })
-    .catch(err => { res.status(500).send({ message: err.message || "Some error occurred while retrieving enrollments." });
-  });
-};
-
-// Find a single Enrollment with an id
-exports.findOne = (req, res) => {
-  const id = req.params.id;
-
-  Enrollment.findByPk(id)
-    .then(data => { res.send(data); })
-    .catch(err => { res.status(500).send({ message: "Error retrieving Enrollment with id=" + id });
-  });
-};
-
-// Update a Enrollment by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
 
   Enrollment.update(req.body, { where: { id: id } })
-    .then(num => {
-      if (num == 1) { res.send({ message: "Enrollment was updated successfully." }); }
-      else { res.send({ message: `Cannot update Enrollment with id=${id}. Maybe Enrollment was not found or req.body is empty!` }); } })
-    .catch(err => { res.status(500).send({ message: "Error updating Enrollment with id=" + id }); });
+  .then(num => {
+    if (num == 1) { res.send({ message: "Enrollment was updated successfully." }); }
+    else { res.send({ message: "Cannot update enrollment with id=${id}. Maybe enrollment was not found or req.body is empty!" }); } })
+  .catch(err => { res.status(500).send({ message: "Error updating enrollment with id =" + id }); });
 };
 
-// Delete a Enrollment with the specified id in the request
-exports.delete = (req, res) => {
-  const id = req.params.id;
-
-  Enrollment.destroy({ where: { id: id } })
-    .then(num => {
-      if (num == 1) { res.send({ message: "Enrollment was deleted successfully!" }); }
-      else { res.send({ message: `Cannot delete Enrollment with id=${id}. Maybe Enrollment was not found!` }); } })
-    .catch(err => { res.status(500).send({ message: "Could not delete Enrollment with id=" + id }); });
-};
-
-// Delete all Enrollments from the database.
-exports.deleteAll = (req, res) => {
-  Enrollment.destroy({ where: {}, truncate: false })
-    .then(nums => { res.send({ message: `${nums} Enrollments were deleted successfully!` }); })
-    .catch(err => { res.status(500).send({ message: err.message || "Some error occurred while removing all enrollments." }); });
-};
-
-// find all published Enrollment
-exports.findAllPublished = (req, res) => {
-  Enrollment.findAll({ where: { published: true } })
+exports.findAllByMember = (req, res) => {
+  const memberId = req.params.memberId
+  Enrollment.findAll({ where: { memberId: memberId } })
     .then(data => { res.send(data); })
     .catch(err => { res.status(500).send({ message: err.message || "Some error occurred while retrieving enrollments." }); });
 };
+

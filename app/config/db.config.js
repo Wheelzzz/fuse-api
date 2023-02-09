@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
   HOST: "n6tzc76eqz.database.windows.net",
   PORT: "1433",
   USER: "kwheeler",
@@ -12,3 +12,18 @@ module.exports = {
     idle: 10000
   }
 };
+
+module.exports = config;
+
+
+// const config = {
+//  user:  'kwheeler',
+//  password:  'Wheelzzz57106',
+//  server:  'n6tzc76eqz.database.windows.net',
+//  port:  1433,
+//  database:  'fuse',
+  // options: {
+  //     trustedconnection:  true,
+  //     enableArithAbort:  true,
+  // },
+
