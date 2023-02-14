@@ -28,6 +28,8 @@ app.get("/", (req, res) => {res.json({ message: "Welcome to Fuse API!!" });});
   require("./app/routes/activity.routes")(app);
   require("./app/routes/enrollment.routes")(app);
   require("./app/routes/caregiver.routes")(app);
+  require("./app/routes/case-manager.routes")(app);
+  require("./app/routes/referral.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

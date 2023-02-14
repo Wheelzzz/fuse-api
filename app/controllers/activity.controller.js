@@ -35,34 +35,13 @@ exports.findAll = (req, res) => {
   });
 };
 
+exports.findByMember = (req, res) => {
+  const memberId = req.params.memberId;
 
-
-
-
-
-
-
-
-
-// Find a single Activity with an id
-// exports.findOne = (req, res) => {
-//   const id = req.params.id;
-
-//   Activity.findByPk(id)
-//     .then(data => { res.send(data); })
-//     .catch(err => {
-//       console.log(err)
-//       res.status(500).send({ message: "Error retrieving Activity with id=" + id });
-//   });
-// };
-
-// exports.findByClient = (req, res) => {
-//   const clientId = req.params.clientId;
-
-//   Activity.findAll({ where: { clientId: clientId } })
-//     .then(data => { res.send(data); })
-//     .catch(err => { res.status(500).send({ message: err.message || "Some error occurred while retrieving client activity." }); });
-// };
+  Activity.findAll({ where: { memberId: memberId } })
+  .then(data => { res.send(data); })
+  .catch(err => { res.status(500).send({ message: err.message || "Some error occurred while retrieving client activity." }); });
+};
 
 // Update a Activity by the id in the request
 exports.update = (req, res) => {

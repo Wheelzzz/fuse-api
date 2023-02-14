@@ -120,52 +120,6 @@ exports.upsertMember = (req, res) => {
 
 
 
-// exports.upsertMember = (req, res) => {
-//   const member = {
-//     id:               req.body.id,
-//     firstName:        req.firstName,
-//     middleName:       req.middleName,
-//     lastName:         req.body.lastName,
-//     address1:         req.body.address1,
-//     address2:         req.body.address2,
-//     city:             req.body.city,
-//     stateProvince:    req.body.stateProvince,
-//     zipCode:          req.body.zipCode,
-//     gender:           req.body.gender,
-//     dob:              req.body.dob,
-//     phone1:           req.body.phone1,
-//     phone2:           req.body.phone2,
-//     email:            req.body.email,
-//     onboardDate:      req.body.onboardDate,
-//     caseManagerId:    req.body.caseManagerId,
-//     createdByUserId:  req.body.createdByUserID,
-//     updatedByUserId:  req.body.updatedByUserID
-//   };
-
-//   // let pool = sql.connect(config);
-//   // let upsertMember = pool.request()
-//   Member.upsertMember(member)
-//     .input('id',            sql.Int,            member.id)
-//     .input('firstName',     sql.varChar(100),   member.firstName)
-//     .input('middleName',    sql.varchar(100),   member.middleName)
-//     .input('lastName',      sql.varChar(100),   member.lastName)
-//     .input('address1',      sql.VarChar(100),   member.address1)
-//     .input('address2',      sql.VarChar(100),   member.address2)
-//     .input('city',          sql.VarChar(100),   member.city)
-//     .input('stateProvince', sql.VarChar(25),    member.stateProvince)
-//     .input('zipCode',       sql.VarChar(25),    member.zipCode)
-//     .input('phone1',        sql.varChar(25),    member.phone1)
-//     .input('phone2',        sql.varchar(25),    member.phone2)
-//     .input('email',         sql.varchar(100),   member.email)
-//     .input('gender',        sql.varChar(25),    member.gender)
-//     .input('dob',           sql.date,           member.dob)
-//     .input('onboardDate',   sql.date,           member.onboardDate)
-//     .input('caseManagerId', sql.Int,            member.caseManagerId)
-//     .execute('upsertMember');
-
-//     return  upsertMember.recordsets;
-// }
-
 // Find a single Client with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;

@@ -11,9 +11,8 @@ module.exports = app => {
   // Retrieve a single Activity with id
   // router.get("/:id", activities.findOne);
 
-  // Retrieve a activities by client
-  // router.get("/client/:clientId", activities.findByClient);
-
+  // Retrieve a activities by member
+  router.get("/member/:memberId", activities.findByMember);
 
   // Update a Activity with id
   // router.put("/:id", activities.update);
