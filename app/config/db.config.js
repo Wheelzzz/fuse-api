@@ -5,6 +5,7 @@ const config = {
   PASSWORD: "Wheelzzz57106",
   DB: "fuse",
   dialect: "mssql",
+  server: "n6tzc76eqz.database.windows.net",
   pool: {
     max: 5,
     min: 0,

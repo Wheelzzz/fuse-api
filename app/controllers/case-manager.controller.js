@@ -1,12 +1,33 @@
 const db = require("../models");
 const CaseManager = db.caseManagers;
 const sql = require('mssql');
+const dbConfig = require("../config/db.config.js");
+const Sequelize = require("sequelize");
+const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+  host: dbConfig.HOST,
+  port: dbConfig.PORT,
+  dialect: dbConfig.dialect,
+  freezeTableName: true,
+  pool: {
+    max: dbConfig.pool.max,
+    min: dbConfig.pool.min,
+    acquire: dbConfig.pool.acquire,
+    idle: dbConfig.pool.idle,
+  },
+});
 
 exports.findAll = (req, res) => {
   CaseManager.findAll()
     .then(data => { res.send(data); })
     .catch(err => { res.status(500).send({ message: err.message || "Some error occurred while retrieving data." });
   });
+};
+
+exports.caseManagerList = (req, res) => {
+
+  sequelize.query('EXEC dbo.getCaseManagerList', { type: sequelize.QueryTypes.SELECT })
+            .then(data => { res.send(data); } )
+            .catch(error => { res.status(500).send({ message: error.message })})
 };
 
 exports.create = (req, res) => {

@@ -3,6 +3,7 @@ module.exports = app => {
 const programs = require("../controllers/program.controller");
   var router = require("express").Router();
   router.get("/", programs.findAll);
+  router.get("/sp", programs.programList);
   router.post("/", programs.create);
   router.put("/:id", programs.update);
   // Retrieve a single Program with id

@@ -2,6 +2,21 @@ const db = require("../models");
 const Member = db.members;
 const sql = require('mssql');
 
+const dbConfig = require("../config/db.config.js");
+const Sequelize = require("sequelize");
+const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+  host: dbConfig.HOST,
+  port: dbConfig.PORT,
+  dialect: dbConfig.dialect,
+  freezeTableName: true,
+  pool: {
+    max: dbConfig.pool.max,
+    min: dbConfig.pool.min,
+    acquire: dbConfig.pool.acquire,
+    idle: dbConfig.pool.idle,
+  },
+});
+
 // Retrieve all Members from the database.
 exports.findAll = (req, res) => {
   Member.findAll()
@@ -9,6 +24,29 @@ exports.findAll = (req, res) => {
     .catch(err => { res.status(500).send({ message: err.message || "Some error occurred while retrieving members." });
   });
 };
+
+exports.memberList = (req, res) => {
+ sequelize.query('EXEC dbo.getMemberList', { type: sequelize.QueryTypes.SELECT })
+          .then(data => { res.send(data); } )
+          .catch(error => { res.status(500).send({ message: error.message })})
+};
+
+
+exports.memberHealthInsurance = (req, res) => {
+  const memberId = req.params.memberId;
+  sequelize.query('EXEC dbo.getHealthInsurance @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
+ 
+
+ exports.memberActivities = (req, res) => {
+  const memberId = req.params.memberId;
+  sequelize.query('EXEC dbo.getActivities @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
+
 
 // Create and Save a new Member
 exports.create = (req, res) => {
