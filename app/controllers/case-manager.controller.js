@@ -24,8 +24,14 @@ exports.findAll = (req, res) => {
 };
 
 exports.caseManagerList = (req, res) => {
-
   sequelize.query('EXEC dbo.getCaseManagerList', { type: sequelize.QueryTypes.SELECT })
+            .then(data => { res.send(data); } )
+            .catch(error => { res.status(500).send({ message: error.message })})
+};
+
+exports.caseManagerAssignments = (req, res) => {
+  const caseManagerId = req.params.caseManagerId;
+  sequelize.query('EXEC dbo.getCaseManagerAssignments @caseManagerId = :caseManagerId', { replacements: { caseManagerId: caseManagerId },type: sequelize.QueryTypes.SELECT })
             .then(data => { res.send(data); } )
             .catch(error => { res.status(500).send({ message: error.message })})
 };

@@ -4,6 +4,7 @@ module.exports = app => {
   router.get("/casemanageractivity", dashboard.caseManagerActivity);
   router.get("/programenrollments", dashboard.programEnrollments);
   router.get("/programactivitysummary", dashboard.programActivitySummary);
+  router.get("/membersunassigned", dashboard.membersUnassigned);
   app.use('/api/dashboard', router);
 };
 

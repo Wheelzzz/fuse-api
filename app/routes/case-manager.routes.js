@@ -3,6 +3,7 @@ module.exports = app => {
   var router = require("express").Router();
   router.get("/", caseManagers.findAll);
   router.get("/sp", caseManagers.caseManagerList);
+  router.get("/assignments/:caseManagerId", caseManagers.caseManagerAssignments);
   router.get("/:id", caseManagers.findOne);
   router.post("/", caseManagers.create);
   router.put("/:id", caseManagers.update);
