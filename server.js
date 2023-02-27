@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 
 const cors = require("cors");
-var corsOptions = { origin: ['https://localhost:3000', 'http://localhost:3000', 'https://fuse-cms.azurewebsites.net:8080'] }
+var corsOptions = { origin: ['https://localhost:3000', 'http://localhost:3000', 'https://fuse-cms.azurewebsites.net:443', 'http://fuse-cms.azurewebsites.net:8080'] }
 app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
@@ -11,6 +11,12 @@ app.use(express.urlencoded({ extended: true }));
 
 const db = require("./app/models");
 db.sequelize.sync();
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.get("/", (req, res) => {res.json({ message: "Welcome to Fuse API!!" });});
   require("./app/routes/member.routes")(app);

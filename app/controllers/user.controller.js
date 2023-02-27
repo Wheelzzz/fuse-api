@@ -1,5 +1,5 @@
 const db = require("../models");
-const Member = db.members;
+const User = db.users;
 const sql = require('mssql');
 
 const dbConfig = require("../config/db.config.js");
@@ -17,7 +17,7 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   },
 });
 
-// Retrieve all Members from the database.
+
 exports.findAll = (req, res) => {
   Member.findAll()
     .then(data => { res.send(data); })
@@ -31,12 +31,6 @@ exports.memberList = (req, res) => {
           .catch(error => { res.status(500).send({ message: error.message })})
 };
 
-exports.memberAddressInfo = (req, res) => {
-  const memberId = req.params.memberId;
-  sequelize.query('EXEC dbo.getAddressInformation @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
-           .then(data => { res.send(data); } )
-           .catch(error => { res.status(500).send({ message: error.message })})
- };
 
 exports.memberHealthInsurance = (req, res) => {
   const memberId = req.params.memberId;
@@ -44,13 +38,7 @@ exports.memberHealthInsurance = (req, res) => {
            .then(data => { res.send(data); } )
            .catch(error => { res.status(500).send({ message: error.message })})
  };
-
-exports.memberReferrals = (req, res) => {
-  const memberId = req.params.memberId;
-  sequelize.query('EXEC dbo.getReferrals @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
-           .then(data => { res.send(data); } )
-           .catch(error => { res.status(500).send({ message: error.message })})
- };
+ 
 
  exports.memberActivities = (req, res) => {
   const memberId = req.params.memberId;
