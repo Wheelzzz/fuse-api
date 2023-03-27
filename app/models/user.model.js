@@ -2,6 +2,7 @@ const { Sequelize } = require("sequelize");
 
 module.exports = (sequelize, Sequelize) => {
   const User = sequelize.define("user", {
+    userId:               {type: Sequelize.STRING},
     userName:             {type: Sequelize.STRING},
     password:             {type: Sequelize.STRING},
     firstName:            {type: Sequelize.STRING},

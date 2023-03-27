@@ -23,5 +23,6 @@ const db = {};
   db.caregivers = require("./caregiver.model")(sequelize, Sequelize);
   db.caseManagers = require("./case-manager.model")(sequelize, Sequelize);
   db.referrals = require("./referral.model")(sequelize, Sequelize);
+  db.users = require("./user.model.js")(sequelize, Sequelize);;
   module.exports = db;
 

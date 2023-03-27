@@ -4,6 +4,7 @@ const sql = require('mssql');
 
 const dbConfig = require("../config/db.config.js");
 const Sequelize = require("sequelize");
+const { TYPES } = require("tedious");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   port: dbConfig.PORT,
@@ -31,30 +32,66 @@ exports.memberList = (req, res) => {
           .catch(error => { res.status(500).send({ message: error.message })})
 };
 
-exports.memberAddressInfo = (req, res) => {
+// exports.memberAddressInfo = (req, res) => {
+//   const memberId = req.params.memberId;
+//   sequelize.query('EXEC members.getAddressInformation @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+//            .then(data => { res.send(data); } )
+//            .catch(error => { res.status(500).send({ message: error.message })})
+//  };
+
+exports.memberInsurance = (req, res) => {
   const memberId = req.params.memberId;
-  sequelize.query('EXEC dbo.getAddressInformation @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+  sequelize.query('EXEC members.getInsurance @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
            .then(data => { res.send(data); } )
            .catch(error => { res.status(500).send({ message: error.message })})
  };
 
-exports.memberHealthInsurance = (req, res) => {
+ exports.memberTimeline = (req, res) => {
   const memberId = req.params.memberId;
-  sequelize.query('EXEC dbo.getHealthInsurance @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+  sequelize.query('EXEC members.getTimeline @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
+
+ exports.memberCompliance = (req, res) => {
+  const memberId = req.params.memberId;
+  sequelize.query('EXEC members.getCompliance @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
+
+
+ exports.memberDemographics = (req, res) => {
+  const memberId = req.params.memberId;
+  sequelize.query('EXEC members.getDemographics @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
+
+ exports.memberCaregivers = (req, res) => {
+  const memberId = req.params.memberId;
+  sequelize.query('EXEC members.getCaregivers @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
+
+ exports.memberProviders = (req, res) => {
+  const memberId = req.params.memberId;
+  sequelize.query('EXEC members.getProviders @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
            .then(data => { res.send(data); } )
            .catch(error => { res.status(500).send({ message: error.message })})
  };
 
 exports.memberReferrals = (req, res) => {
   const memberId = req.params.memberId;
-  sequelize.query('EXEC dbo.getReferrals @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+  sequelize.query('EXEC members.getReferrals @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
            .then(data => { res.send(data); } )
            .catch(error => { res.status(500).send({ message: error.message })})
  };
 
  exports.memberActivities = (req, res) => {
   const memberId = req.params.memberId;
-  sequelize.query('EXEC dbo.getActivities @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+  sequelize.query('EXEC members.getActivities @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
            .then(data => { res.send(data); } )
            .catch(error => { res.status(500).send({ message: error.message })})
  };
@@ -103,71 +140,156 @@ exports.update = (req, res) => {
   .catch(err => { res.status(500).send({ message: "Error updating member with id =" + id }); });
 };
 
+exports.memberActivitiesUpsert = (req, res) => {
+  sequelize.query(`exec members.setActivities
+                        @id = :id,
+                        @memberId = :memberId,
+                        @programId = :programId,
+                        @caseManagerId = :caseManagerId,
+                        @activityTypeId = :activityTypeId,
+                        @activityDate = :activityDate,
+                        @startTime = :startTime,
+                        @endTime = :endTime,
+                        @duration = :duration,
+                        @effectiveness = :effectiveness,
+                        @activityNotes = :activityNotes,
+                        @userId = :userId`,
+                        { replacements: { id: req.body.id,
+                                          memberId: req.body.memberId,
+                                          programId: req.body.programId,
+                                          caseManagerId: req.body.caseManagerId,
+                                          activityTypeId: req.body.activityTypeId,
+                                          activityDate: req.body.activityDate,
+                                          startTime: req.body.startTime,
+                                          endTime: req.body.endTime,
+                                          duration: req.body.duration,
+                                          effectiveness: req.body.effectiveness,
+                                          activityNotes: req.body.activityNotes,
+                                          userId: req.body.userId },
+                          type:         sequelize.QueryTypes.select })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
+
+ exports.memberComplianceUpsert = (req, res) => {
+  sequelize.query(`exec members.setCompliance
+                        @memberId = :memberId,
+                        @hasSMSConsent = :hasSMSConsent,
+                        @consentType = :consentType,
+                        @medicaidId = :medicaidId,
+                        @dhs = :dhs,
+                        @needsGuardian = :needsGuardian,
+                        @userId = :userId`,
+                        { replacements: { memberId: req.body.memberId,
+                                          hasSMSConsent: req.body.hasSMSConsent,
+                                          consentType: req.body.consentType,
+                                          medicaidId: req.body.medicaidId,
+                                          dhs: req.body.dhs,
+                                          needsGuardian: req.body.needsGuardian,
+                                          userId: req.body.userId },
+                          type:         sequelize.QueryTypes.select })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
 
 
+ exports.memberBulkInsert = (req,res) => {
 
+ }
 
+ exports.memberDemographicsUpsert = (req, res) => {
+  sequelize.query(`exec members.setDemographics
+                        @memberId = :memberId,
+                        @gender = :gender,
+                        @genderIdentity = :genderIdentity,
+                        @sexualOrientation = :sexualOrientation,
+                        @pronouns = :pronouns,
+                        @dob = :dob,
+                        @ethnicity = :ethnicity,
+                        @race = :race,
+                        @primaryLanguage = :primaryLanguage,
+                        @primarylanguageOther = :primaryLanguageOther,
+                        @religion = :religion,
+                        @religionOther = :religionOther,
+                        @maritalStatus = :maritalStatus,
+                        @disabilityStatus = :disabilityStatus,
+                        @disabilityNotes = :disabilityNotes,
+                        @userId = :userId`,
+                        { replacements: { memberId: req.body.memberId,
+                                          gender: req.body.gender,
+                                          genderIdentity: req.body.genderIdentity,
+                                          sexualOrientation: req.body.sexualOrientation,
+                                          pronouns: req.body.pronouns,
+                                          dob: req.body.dob,
+                                          ethnicity: req.body.ethnicity,
+                                          race: req.body.race,
+                                          primaryLanguage: req.body.primaryLanguage,
+                                          primaryLanguageOther: req.body.primaryLanguageOther,
+                                          religion: req.body.religion,
+                                          religionOther: req.body.religionOther,
+                                          maritalStatus: req.body.maritalStatus,
+                                          disabilityStatus: req.body.disabilityStatus,
+                                          disabilityNotes: req.body.disabilityNotes,
+                                          userId: req.body.userId },
+                           type:         sequelize.QueryTypes.SELECT } )
+         .then(data => { res.send(data); } )
+         .catch(error => { res.status(500).send({ message: error.message })})
+ };
 
+ exports.memberInsuranceUpsert = (req, res) => {
+  sequelize.query(`exec members.setInsurance
+                        @id = :id,
+                        @memberId = :memberId,
+                        @currentHealthCoverage = :currentHealthCoverage,
+                        @currentMedicaidType = :currentMedicaidType,
+                        @currentMedicaidInsurer = :currentMedicaidInsurer,
+                        @qnxtId = :qnxtId,
+                        @mphiDataPullInfo = :mphiDataPullInfo,
+                        @dhsCaseNumber = :dhsCaseNumber,
+                        @insuranceDataSource = :insuranceDataSource,
+                        @mhcbds = :mhcbds,
+                        @userId = :userId`,
+                        { replacements: { id: req.body.id,
+                                          memberId: req.body.memberId,
+                                          currentHealthCoverage: req.body.currentHealthCoverage,
+                                          currentMedicaidType: req.body.currentMedicaidType,
+                                          currentMedicaidInsurer: req.body.currentMedicaidInsurer,
+                                          qnxtId: req.body.qnxtId,
+                                          mphiDataPullInfo: req.body.mphiDataPullInfo,
+                                          dhsCaseNumber: req.body.dhsCaseNumber,
+                                          insuranceDataSource: req.body.insuranceDataSource,
+                                          mhcbds: req.body.mhcbds,
+                                          userId: req.body.userId },
+                          type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
 
-/*
-// Create and Save a new Member
-exports.upsertMember = (req, res) => {
-  const member = {
-    firstName:        firstName,
-    middleName:       middleName,
-    lastName:         req.body.lastName,
-    address1:         req.body.address1,
-    address2:         req.body.address2,
-    city:             req.body.city,
-    stateProvince:    req.body.stateProvince,
-    zipCode:          req.body.zipCode,
-    gender:           req.body.gender,
-    dob:              req.body.dob,
-    phone1:           req.body.phone1,
-    phone2:           req.body.phone2,
-    email:            req.body.email,
-    onboardDate:      req.body.onboardDate,
-    caseManagerId:    req.body.caseManagerId,
-    createdByUserId:  req.body.createdByUserID,
-    updatedByUserId:  req.body.updatedByUserID
-  };
+ exports.memberProvidersUpsert = (req, res) => {
+  sequelize.query(`exec members.setProviders
+                        @id = :id,
+                        @memberId = :memberId,
+                        @provider = :provider,
+                        @providerType = :providerType,
+                        @businessAssociationAgreement = :businessAssociationAgreement,
+                        @userId = :userId`,
+                        { replacements: { id: req.body.id,
+                                          memberId: req.body.memberId,
+                                          provider: req.body.provider,
+                                          providerType: req.body.providerType,
+                                          businessAssociationAgreement: req.body.businessAssociationAgreement,
+                                          userId: req.body.userId },
+                          type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
 
-  // Validate request
-  if (!req.body.firstName) {
-    res.status(400).send({message: "Content can not be empty!"});
-    return;
-  }
-
-  // async function upsertMember(member) {
-  let pool = sql.connect(config);
-  let memberAPICall = pool.request()
-    .input('id',            sql.Int,            member.id)
-    .input('firstName',     sql.varChar(100),   member.firstName)
-    .input('middleName',    sql.varchar(100),   member.middleName)
-    .input('lastName',      sql.varChar(100),   member.lastName)
-    .input('address1',      sql.VarChar(100),   member.address1)
-    .input('address2',      sql.VarChar(100),   member.address2)
-    .input('city',          sql.VarChar(100),   member.city)
-    .input('stateProvince', sql.VarChar(25),    member.stateProvince)
-    .input('zipCode',       sql.VarChar(25),    member.zipCode)
-    .input('phone1',        sql.varChar(25),    member.phone1)
-    .input('phone2',        sql.varchar(25),    member.phone2)
-    .input('email',         sql.varchar(100),   member.email)
-    .input('gender',        sql.varChar(25),    member.gender)
-    .input('dob',           sql.date,           member.dob)
-    .input('onboardDate',   sql.date,           member.onboardDate)
-    .input('caseManagerId', sql.Int,            member.caseManagerId)
-    .execute('upsertMember');
-
-  // return memberAPICall.recordset;
-
-    //    .then(data => {res.send(data);})
-    //    .catch(err => {res.status(500).send({message: err.message || "Some error occurred while creating the member."});});
-  };
-
-*/
-
-
+ exports.memberRecentIntakes = (req, res) => {
+  const memberId = req.params.memberId;
+  sequelize.query('EXEC members.getRecentIntakes', { type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
 
 // Find a single Client with an id
 exports.findOne = (req, res) => {
@@ -178,4 +300,5 @@ exports.findOne = (req, res) => {
     .catch(err => { res.status(500).send({ message: "Error retrieving Client with id=" + id });
   });
 };
+
 

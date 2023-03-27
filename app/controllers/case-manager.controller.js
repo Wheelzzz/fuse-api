@@ -23,6 +23,12 @@ exports.findAll = (req, res) => {
   });
 };
 
+exports.caseManagerDropDown = (req, res) => {
+  sequelize.query('EXEC dbo.getCaseManagerDropDown', { type: sequelize.QueryTypes.SELECT })
+            .then(data => { res.send(data); } )
+            .catch(error => { res.status(500).send({ message: error.message })})
+};
+
 exports.caseManagerList = (req, res) => {
   sequelize.query('EXEC dbo.getCaseManagerList', { type: sequelize.QueryTypes.SELECT })
             .then(data => { res.send(data); } )
