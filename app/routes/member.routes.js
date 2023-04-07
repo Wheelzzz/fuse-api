@@ -1,7 +1,7 @@
 module.exports = app => {
   const members = require("../controllers/member.controller");
   var router = require("express").Router();
-  router.get("/", members.findAll);
+  // router.get("/", members.findAll);
   router.get("/sp/", members.memberList);
 
   router.get("/demographics/:memberId", members.memberDemographics);
@@ -12,10 +12,11 @@ module.exports = app => {
   router.get("/providers/:memberId", members.memberProviders);
   router.get("/timeline/:memberId", members.memberTimeline);
   router.get("/referrals/:memberId", members.memberReferrals);
+  router.get("/active-referrals/:memberId", members.memberActiveReferrals);
   router.get("/overview/recent-intakes", members.memberRecentIntakes);
-  router.get("/:id", members.findOne);
+//  router.get("/:id", members.findOne);
 
-  router.post("/", members.create);
+//   router.post("/", members.create);
 
   router.put("/:id", members.update);
 
@@ -24,6 +25,8 @@ module.exports = app => {
   router.put("/demographics/set", members.memberDemographicsUpsert);
   router.put("/insurance/set", members.memberInsuranceUpsert);
   router.put("/providers/set", members.memberProvidersUpsert);
+  router.put("/intake/set", members.memberIntake);
+  router.put("/complete-case/set", members.memberCompleteCase);
   // router.post("/login", members.login);
 
   app.use('/api/members', router);

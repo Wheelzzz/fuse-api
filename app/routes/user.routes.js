@@ -4,7 +4,8 @@ module.exports = app => {
 
   router.get("/", users.userList);
   router.get("/list", users.userList);
-  router.put("/login", users.login);
+
+  router.put("/login/get", users.login);
 
   app.use('/api/users', router);
 };

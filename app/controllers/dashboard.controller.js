@@ -13,6 +13,12 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   },
 });
 
+exports.dashboardLandingPage = (req, res) => {
+  sequelize .query('EXEC dashboard.getLandingPageData', { type: sequelize.QueryTypes.SELECT })
+            .then(data => { res.send(data); } )
+            .catch(error => { res.status(500).send({ message: error.message })})
+};
+
 exports.caseManagerActivity = (req, res) => {
   sequelize .query('EXEC dbo.getActivityByCaseManager', { type: sequelize.QueryTypes.SELECT })
             .then(data => { res.send(data); } )

@@ -96,7 +96,18 @@ exports.memberReferrals = (req, res) => {
            .catch(error => { res.status(500).send({ message: error.message })})
  };
 
-// Create and Save a new Member
+
+ exports.memberActiveReferrals = (req, res) => {
+  const memberId = req.params.memberId;
+  sequelize.query('EXEC members.getActiveReferrals @memberId = :memberId', { replacements: { memberId: memberId }, type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
+
+
+
+
+ // Create and Save a new Member
 exports.create = (req, res) => {
   const member = {
     firstName:        req.body.firstName,
@@ -208,9 +219,7 @@ exports.memberActivitiesUpsert = (req, res) => {
                         @ethnicity = :ethnicity,
                         @race = :race,
                         @primaryLanguage = :primaryLanguage,
-                        @primarylanguageOther = :primaryLanguageOther,
                         @religion = :religion,
-                        @religionOther = :religionOther,
                         @maritalStatus = :maritalStatus,
                         @disabilityStatus = :disabilityStatus,
                         @disabilityNotes = :disabilityNotes,
@@ -224,9 +233,7 @@ exports.memberActivitiesUpsert = (req, res) => {
                                           ethnicity: req.body.ethnicity,
                                           race: req.body.race,
                                           primaryLanguage: req.body.primaryLanguage,
-                                          primaryLanguageOther: req.body.primaryLanguageOther,
                                           religion: req.body.religion,
-                                          religionOther: req.body.religionOther,
                                           maritalStatus: req.body.maritalStatus,
                                           disabilityStatus: req.body.disabilityStatus,
                                           disabilityNotes: req.body.disabilityNotes,
@@ -240,25 +247,31 @@ exports.memberActivitiesUpsert = (req, res) => {
   sequelize.query(`exec members.setInsurance
                         @id = :id,
                         @memberId = :memberId,
-                        @currentHealthCoverage = :currentHealthCoverage,
-                        @currentMedicaidType = :currentMedicaidType,
-                        @currentMedicaidInsurer = :currentMedicaidInsurer,
+                        @healthCoverage = :healthCoverage,
+                        @coverageStartDate = :coverageStartDate,
+                        @coverageEndDate = :coverageEndDate,
+                        @medicaidType = :medicaidType,
+                        @medicaidInsurer = :medicaidInsurer,
                         @qnxtId = :qnxtId,
                         @mphiDataPullInfo = :mphiDataPullInfo,
                         @dhsCaseNumber = :dhsCaseNumber,
                         @insuranceDataSource = :insuranceDataSource,
                         @mhcbds = :mhcbds,
+                        @insuranceNotes = :insuranceNotes,
                         @userId = :userId`,
                         { replacements: { id: req.body.id,
                                           memberId: req.body.memberId,
-                                          currentHealthCoverage: req.body.currentHealthCoverage,
-                                          currentMedicaidType: req.body.currentMedicaidType,
-                                          currentMedicaidInsurer: req.body.currentMedicaidInsurer,
+                                          healthCoverage: req.body.healthCoverage,
+                                          coverageStartDate: req.body.coverageStartDate,
+                                          coverageEndDate: req.body.coverageEndDate,
+                                          medicaidType: req.body.medicaidType,
+                                          medicaidInsurer: req.body.medicaidInsurer,
                                           qnxtId: req.body.qnxtId,
                                           mphiDataPullInfo: req.body.mphiDataPullInfo,
                                           dhsCaseNumber: req.body.dhsCaseNumber,
                                           insuranceDataSource: req.body.insuranceDataSource,
                                           mhcbds: req.body.mhcbds,
+                                          insuranceNotes: req.body.insuranceNotes,
                                           userId: req.body.userId },
                           type: sequelize.QueryTypes.SELECT })
            .then(data => { res.send(data); } )
@@ -272,12 +285,14 @@ exports.memberActivitiesUpsert = (req, res) => {
                         @provider = :provider,
                         @providerType = :providerType,
                         @businessAssociationAgreement = :businessAssociationAgreement,
+                        @providerNotes = :providerNotes,
                         @userId = :userId`,
                         { replacements: { id: req.body.id,
                                           memberId: req.body.memberId,
                                           provider: req.body.provider,
                                           providerType: req.body.providerType,
                                           businessAssociationAgreement: req.body.businessAssociationAgreement,
+                                          providerNotes: req.body.providerNotes,
                                           userId: req.body.userId },
                           type: sequelize.QueryTypes.SELECT })
            .then(data => { res.send(data); } )
@@ -302,3 +317,166 @@ exports.findOne = (req, res) => {
 };
 
 
+exports.memberIntake = (req, res) => {
+  sequelize.query(`exec members.setNewIntake
+                        -- General
+                        @firstName = :firstName,
+                        @middleName = :middleName,
+                        @lastName = :lastName,
+                        @phone1 = :phone1,
+                        @phone2 = :phone2,
+                        @email	= :email,
+                        @generalNotes = :generalNotes,
+                        -- Referral
+                        @referralDate = :referralDate,
+                        @referralMethod = :referralMethod,
+                        @referralSource = :referralSource,
+                        @urgencyLevel = :urgencyLevel,
+                        @domain = :domain,
+                        @reason = :reason,
+                        @referralNotes = :referralNotes,
+                        -- Demographics...
+                        @dob = :dob,
+                        @gender = :gender,
+                        @genderIdentity = :genderIdentity,
+                        @sexualOrientation = :sexualOrientation,
+                        @pronouns = :pronouns,
+                        @ethnicity = :ethnicity,
+                        @race = :race,
+                        @primaryLanguage = :primaryLanguage,
+                        @religion = :religion,
+                        @maritalStatus = :maritalStatus,
+                        @disabilityStatus = :disabilityStatus,
+                        @disabilityNotes = :disabilityNotes,
+                        -- Compliance
+                        @hasSMSConsent = :hasSMSConsent,
+                        @consentType = :consentType,
+                        @medicaidId = :medicaidId,
+                        @needsGuardian = :needsGuardian,
+                        @complianceNotes = :complianceNotes,
+                        -- Insurance
+                        @healthCoverage = :healthCoverage,
+                        @coverageStartDate = :coverageStartDate,
+                        @coverageEndDate = :coverageEndDate,
+                        @medicaidType = :medicaidType,
+                        @medicaidInsurer = :medicaidInsurer,
+                        @insuranceNotes = :insuranceNotes,
+                        -- Caregivers
+                        @primaryFirstName = :primaryFirstName,
+                        @primaryLastName = :primaryLastName,
+                        @primaryPreferredContactMethod = :primaryPreferredContactMethod,
+                        @primaryRelationship = :primaryRelationship,
+                        @primaryPhone1 = :primaryPhone1,
+                        @primaryPhone2 = :primaryPhone2,
+                        @primaryEmail	= :primaryEmail,
+                        @primaryAddress1 = :primaryAddress1,
+                        @primaryAddress2 = :primaryAddress2,
+                        @primaryCity = :primaryCity,
+                        @primaryStateProvince = :primaryStateProvince,
+                        @primaryZipCode = :primaryZipCode,
+                        -- Secondary Caregiver
+                        @secondaryFirstName = :secondaryFirstName,
+                        @secondaryLastName = :secondaryLastName,
+                        @secondaryPreferredContactMethod = :secondaryPreferredContactMethod,
+                        @secondaryRelationship = :secondaryRelationship,
+                        @secondaryPhone1 = :secondaryPhone1,
+                        @secondaryPhone2 = :secondaryPhone2,
+                        @secondaryEmail	= :secondaryEmail,
+                        @secondaryAddress1 = :secondaryAddress1,
+                        @secondaryAddress2 = :secondaryAddress2,
+                        @secondaryCity = :secondaryCity,
+                        @secondaryStateProvince = :secondaryStateProvince,
+                        @secondaryZipCode = :secondaryZipCode,
+                        -- Providers
+                        @provider = :provider,
+                        @providerType = :providerType,
+                        @businessAssociationAgreement = :businessAssociationAgreement,
+                        @providerNotes = :providerNotes,
+                        @userId = :userId;`,
+                        { replacements: { firstName: req.body.firstName,
+                                          middleName: req.body.middleName,
+                                          lastName: req.body.lastName,
+                                          phone1: req.body.phone1,
+                                          phone2: req.body.phone2,
+                                          email: req.body.email,
+                                          generalNotes: req.body.generalNotes,
+                                          referralDate: req.body.referralDate,
+                                          referralMethod: req.body.referralMethod,
+                                          referralSource: req.body.referralSource,
+                                          urgencyLevel: req.body.urgencyLevel,
+                                          domain: req.body.domain,
+                                          reason: req.body.reason,
+                                          referralNotes: req.body.referralNotes,
+                                          dob: req.body.dob,
+                                          gender: req.body.gender,
+                                          genderIdentity: req.body.genderIdentity,
+                                          sexualOrientation: req.body.sexualOrientation,
+                                          pronouns: req.body.pronouns,
+                                          ethnicity: req.body.ethnicity,
+                                          race: req.body.race,
+                                          primaryLanguage: req.body.primaryLanguage,
+                                          religion: req.body.religion,
+                                          maritalStatus: req.body.maritalStatus,
+                                          disabilityStatus: req.body.disabilityStatus,
+                                          disabilityNotes: req.body.disabilityNotes,
+                                          hasSMSConsent: req.body.hasSMSConsent,
+                                          consentType: req.body.consentType,
+                                          medicaidId: req.body.medicaidId,
+                                          needsGuardian: req.body.needsGuardian,
+                                          complianceNotes: req.body.complianceNotes,
+                                          healthCoverage: req.body.healthCoverage,
+                                          coverageStartDate: req.body.coverageStartDate,
+                                          coverageEndDate: req.body.coverageEndDate,
+                                          medicaidType: req.body.medicaidType,
+                                          medicaidInsurer: req.body.medicaidInsurer,
+                                          insuranceNotes: req.body.insuranceNotes,
+                                          primaryFirstName: req.body.primaryFirstName,
+                                          primaryLastName: req.body.primaryLastName,
+                                          primaryPreferredContactMethod: req.body.primaryPreferredContactMethod,
+                                          primaryRelationship: req.body.primaryRelationship,
+                                          primaryPhone1: req.body.primaryPhone1,
+                                          primaryPhone2: req.body.primaryPhone2,
+                                          primaryEmail: req.body.primaryEmail,
+                                          primaryAddress1: req.body.primaryAddress1,
+                                          primaryAddress2: req.body.primaryAddress2,
+                                          primaryCity: req.body.primaryCity,
+                                          primaryStateProvince: req.body.primaryStateProvince,
+                                          primaryZipCode: req.body.primaryZipCode,
+                                          secondaryFirstName: req.body.secondaryFirstName,
+                                          secondaryLastName: req.body.secondaryLastName,
+                                          secondaryPreferredContactMethod: req.body.secondaryPreferredContactMethod,
+                                          secondaryRelationship: req.body.secondaryRelationship,
+                                          secondaryPhone1: req.body.secondaryPhone1,
+                                          secondaryPhone2: req.body.secondaryPhone2,
+                                          secondaryEmail: req.body.secondaryEmail,
+                                          secondaryAddress1: req.body.secondaryAddress1,
+                                          secondaryAddress2: req.body.secondaryAddress2,
+                                          secondaryCity: req.body.secondaryCity,
+                                          secondaryStateProvince: req.body.secondaryStateProvince,
+                                          secondaryZipCode: req.body.secondaryZipCode,
+                                          provider: req.body.provider,
+                                          providerType: req.body.providerType,
+                                          businessAssociationAgreement: req.body.businessAssociationAgreement,
+                                          providerNotes: req.body.providerNotes,
+                                          userId: req.body.userId },
+                          type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
+
+ exports.memberCompleteCase = (req, res) => {
+  sequelize.query(`exec members.setCompleteCase
+                        @referralDetailId = :referralDetailId,
+                        @outcomeDate = :outcomeDate,
+                        @outcome = :outcome,
+                        @outcomeExplanation = :outcomeExplanation,
+                        @userId = :userId;`,
+                        { replacements: { referralDetailId: req.body.referralDetailId,
+                                          outcomeDate: req.body.outcomeDate,
+                                          outcome: req.body.outcome,
+                                          outcomeExplanation: req.body.outcomeExplanation,
+                                          userId: req.body.userId },
+                          type: sequelize.QueryTypes.SELECT })
+           .then(data => { res.send(data); } )
+           .catch(error => { res.status(500).send({ message: error.message })})
+ };
